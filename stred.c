@@ -15,6 +15,7 @@ MODULE_LICENSE("Dual BSD/GPL");
 
 char string[STRING_SIZE];
 int endRead = 0;
+int duzina = 0;
 
 dev_t my_dev_id;
 static struct class *my_class;
@@ -106,6 +107,8 @@ ssize_t stred_write(struct file *pfile, const char __user *buffer, size_t length
 			printk(KERN_ERR "Preko 100 karaktera ne moze se uneti");
 		}
 
+		duzina = strlen(string);
+
 	}
 	else if(strstr(buff, "clear") == buff)
 	{
@@ -118,6 +121,70 @@ ssize_t stred_write(struct file *pfile, const char __user *buffer, size_t length
 
 		printk(KERN_INFO "Uspesno obrisan string iz bufera");
 
+
+		duzina = strlen(string);
+
+	}
+	else if(strstr(buff, "shrink") == buff)
+	{
+		char* novi = string;
+
+		while(string[0] == ' ')
+		{
+
+			novi = string + 1; //pocinje novi niz karaktera od jednog karaktera napred
+			strncpy(string, novi, strlen(novi));
+		}
+		
+		while(string[strlen(string)-1] == ' ')
+		{
+			string[strlen(string)-1] = 0; //terminiran pretposlednji karakter
+
+		}	
+		
+		printk(KERN_INFO "Novi niz je: %s\n", string);
+		
+		duzina = strlen(string);
+	}
+	else if(strstr(buff, "append=") == buff)
+	{
+		char* dodatak = buff + 7;
+		int len = strlen(dodatak);
+
+		if((duzina + len) > 100)
+		{
+			printk(KERN_WARNING "Prepun bafer\nNije dodat string na postojeci\n");
+		}	
+		else
+		{
+			strcat(string, dodatak);
+			printk(KERN_INFO "Novi string je: %s\n", string);
+		}
+
+	}
+	else if(strstr(buff, "truncate=") == buff)
+	{
+		char* novi = buff + 9;
+		int broj;
+
+		ret = sscanf(novi, "%d", &broj);
+
+		if(ret == 1) //samo jedan broj parsiran
+		{
+			int i;
+
+			for(i=0; i < broj; i++)
+			{
+				string[duzina - 1] = 0;
+				duzina = strlen(string);
+			}
+
+			printk(KERN_INFO "Novi string je: %s", string);
+		}
+		else
+		{
+			printk(KERN_WARNING "Samo jedan broj uneti\n"); 
+		}
 	}
 	else
        	{
