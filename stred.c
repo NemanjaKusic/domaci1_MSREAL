@@ -186,6 +186,48 @@ ssize_t stred_write(struct file *pfile, const char __user *buffer, size_t length
 			printk(KERN_WARNING "Samo jedan broj uneti\n"); 
 		}
 	}
+	else if(strstr(buff, "remove=") == buff)
+	{
+		char* rec = buff + 7;
+		int len = strlen(rec);
+		
+		char* novi = strstr(string, rec);
+		int i;
+		int len1,len2;
+		int pozicija;
+		
+		if(novi)
+		{
+			while(novi)
+			{
+				len1 = strlen(string);
+				len2 = strlen(novi);
+				
+				pozicija = len1 - len2; //na ovaj nacin dobijam poziciju u string-u gde se nalazi rec
+
+				for(i=0; i < len2; i++)
+				{
+					string[pozicija + i] = string[pozicija + i + len];
+				}
+
+				for(i=0; i < len; i++)
+				{
+					string[len1-1] = 0;
+				}
+
+				novi = strstr(string, rec); //while se ponavlja sgve dok nema rec u stringu
+			}
+
+			printk(KERN_INFO "Uspesno obrisano\nNovi string je: %s\n", string);
+
+			duzina = strlen(string);
+		}
+		else
+		{
+			printk(KERN_WARNING "Ne postoji ovaj niz karaktera u stringu\n");
+		}
+
+	}
 	else
        	{
 		printk(KERN_WARNING "Pogresno napisana komanda\n");
