@@ -7,8 +7,6 @@ int main()
 	FILE* fp;
 	char* izbor;
 	size_t num_of_bytes = 1;
-	int broj;
-	char karakter;
 	
 	while(1)
 	{
@@ -30,13 +28,8 @@ int main()
 		}
 
 		izbor = (char *)malloc(num_of_bytes+1);
-		/* do{
-			getline(&izbor, &num_of_bytes, fp);
-			sscanf(izbor, "%c", &karakter);
-		}while(karakter == NULL); */
 
-		getline(&izbor, &num_of_bytes, fp);
-		sscanf(izbor, "%d", &broj);
+		getline(&izbor, &num_of_bytes, stdin);
 
 		if(fclose(fp))
 		{
@@ -44,9 +37,8 @@ int main()
 			return -1;
 		}
 			
-		free(izbor);
 
-		switch (broj)
+		switch (*izbor)
 		{
 			case '1':
 				break;
@@ -63,14 +55,16 @@ int main()
 			case '7':
 				break;
 			case 'Q':
-				printf("Izlaz iz aplikacije");
+				free(izbor);
+				printf("Izlaz iz aplikacije\n");
 				return 0;
 
 				break;
 			default:
 				break;
 		}
-
+		
+		free(izbor);
 		
 	}
 
